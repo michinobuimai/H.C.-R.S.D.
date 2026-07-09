@@ -34,9 +34,12 @@ Fractal Square RAndom Rotation Maze Algorithm
 
 
 EDIT:
-Upon later realization is that this concept applies as long as the geometric truth (U-shapes always lead to connected paths)
+Upon later realization is that this concept applies as long as the geometric truth (U-shapes always lead to connected paths) is upheld,
 thus the alternative version should in theory be the "true" version.
 This "true" version should work regardless of the shape aslong as its divided in the U-shape.
+
 As such a name change to:
 Hilbert-Constrained Spatial Division -> HCSD algorithm
 would be more fitting
+
+If this algorithm truly is a TRUE maze is sth. i'm uncertain to proove
