@@ -27,6 +27,6 @@ and uses 21 u shapes
 There is a special way to make it less predictable the more you scale it
 using an alternate version of this algorithm.
 
-i dub the alternative version: FSSRM-algorithm
+i dub the alternative version: FSRRM-algorithm
 
 Fractal Square RAndom Rotation Maze Algorithm
