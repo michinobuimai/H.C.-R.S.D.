@@ -39,7 +39,7 @@ thus the alternative version should in theory be the "true" version.
 This "true" version should work regardless of the shape aslong as its divided in the U-shape.
 
 As such a name change to:
-Hilbert-Constrained Spatial Division -> HCSD algorithm
+Hilbert-Constrained Recursive Spatial Division -> (HC)RSD algorithm
 would be more fitting
 
 If this algorithm truly is a TRUE maze is sth. i'm uncertain to proove
