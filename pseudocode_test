@@ -1,0 +1,117 @@
+
+
+
+
+
+ /// pseudo code /// micomet tee tee
+
+
+ /// -> slider gives n a value from range 1 to 6 with step 1
+
+ /// calculate size (max index, grid goes from 0 - [size])
+
+int [size] = 2^(n+1)-2    n with |D = |N
+
+[depth] = 0
+
+
+function next_step() {
+
+ if ( [x] < [new_max] && [depth] > 0 ){
+
+	[x] + [step]
+ }
+ elseif ( [y] < [new_max]) {
+
+ 	[x] = [pos_shift]
+	[y] + [step]
+ }
+ else if ([depth] < [n]) {
+
+    [step] = [pos_shift] + 1
+    [depth] ++
+    int [pos_shift] = [size] / 2^[depth]
+    [x] = [pos_shift]
+    [y] = [pos_shift]
+    [new_max] = [size] - [pos_shift]
+    create_cross([x],[z],[pos_shift])
+  }
+}
+}
+
+
+function random_uneven([max_value]) {
+
+ [rndm] = random_value(1..[max_value])
+ [even_value] = [rndm] % 2
+ if ([even_value] == 0){
+      [pos_hole] = [rndm] - 1
+    }
+ else {
+      [pos_hole] = [rndm]
+    }
+}
+
+
+function create_cross([x],[y],[length]) {
+
+     create Rectangles:    
+    [dir] = random_value(1..4)
+
+    for CENTER :
+       x y fill directly    
+
+
+    for (+ x) :
+    if ([dir] != 1) {
+      random_uneven([length])
+
+      [x] + 1 to [x] + [pos_hole] - 1
+      [x] + [pos_hole] + 1 to [x] + [length]
+    }
+    else {
+      [x] + 1 to [x] + [length] 
+    }      
+
+
+    for (- x) :
+    if ([dir] != 2) {
+      random_uneven([length])
+
+      [x] - 1 to [x] - [pos_hole] + 1
+      [x] - [pos_hole] - 1 to [x] - [length]
+    }
+    else {
+      [x] - 1 to [x] - [length] 
+    }
+
+    for (+ y) :
+    if ([dir] != 3) {
+      random_uneven([length])
+
+      [y] + 1 to [y] + [pos_hole] - 1
+      [y] + [pos_hole] + 1 to [y] + [length]
+    }
+    else {
+      [y] + 1 to [y] + [length] 
+    }
+
+    for (- y) :
+    if ([dir] != 4) {
+      random_uneven([length])
+
+      [y] - 1 to [y] - [pos_hole] + 1
+      [y] - [pos_hole] - 1 to [y] - [length]
+    }
+    else {
+      [y] - 1 to [y] - [length] 
+    }
+
+}
+
+
+
+
+
+
+
