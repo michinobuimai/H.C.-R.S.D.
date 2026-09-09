@@ -5,6 +5,15 @@ subdivision, rather than the classic randomized-DFS/backtracking approach.
 It's implemented as a step function (`nextStep()`), so the maze can be drawn
 incrementally, paused, resumed, or fast-forwarded to completion at any point.
 
+**Note:** this implementation is built for visualization, not raw
+performance. `nextStep()` draws one cross per call and is driven by the UI's
+animation loop, which is the right shape for watching the maze build up on
+screen but is not the fastest way to generate the underlying maze data. If
+you only need the final maze (no animation), it would be faster to compute
+the grid directly — recursively filling in wall/passage arrays in memory and
+rendering once at the end — skipping the per-step canvas draws and the
+depth-by-depth walk state entirely.
+
 ## How it works
 
 The maze grid size is derived from a depth parameter `n`:
