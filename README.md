@@ -1,5 +1,7 @@
 # Recursive Cross Maze Generator
 
+https://michinobuimai.github.io/H.C.-R.S.D./
+
 A canvas-based maze generator that builds mazes through recursive dyadic
 subdivision, rather than the classic randomized-DFS/backtracking approach.
 It's implemented as a step function (`nextStep()`), so the maze can be drawn
