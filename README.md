@@ -1,45 +1,96 @@
-read the comments on how it works i was too lazy to make a proper explanation but it is quite cool ;)
+# Recursive Cross Maze Generator
 
-EDIT
+A canvas-based maze generator that builds mazes through recursive dyadic
+subdivision, rather than the classic randomized-DFS/backtracking approach.
+It's implemented as a step function (`nextStep()`), so the maze can be drawn
+incrementally, paused, resumed, or fast-forwarded to completion at any point.
 
-IT IS NOT A TRUE MAZE its usage is heavily centered towards procedurally generating dungeons
+## How it works
 
+The maze grid size is derived from a depth parameter `n`:
 
-This uses the U shape also used in the Hiblerts filling shape to create a maze.
+```
+size = 2^(n+1) - 2
+```
 
-It is meant to be specifically used on squares.
+Generation proceeds in `n` depth levels. At each depth `d`, a "step" distance
+is computed:
 
-I haven't found a nice algorithm for my usecases so i made my own that is easier to comprehend and implement (thus the lack of code and explanations).
+```
+pos_shift = floor(size / 2^d)
+```
 
-I came up with this while i was looking for a solution to generate a dungeon inside minecraft with a limited square area.
-I quite like it as this doesnt need ANY storing logic -> last cell visited bull crap and weird remembering of visited cells isnt needed for this algorithm.
+This value both determines where crosses are placed on the grid, and the
+maximum arm length of each cross at that depth. Starting at
+`(pos_shift, pos_shift)`, the generator walks in a grid pattern across the
+canvas, incrementing `x` by `step = pos_shift + 1` until it reaches the far
+edge, then resetting `x` and incrementing `y` the same way — placing one
+cross at every intersection point for that depth. Once a full depth level is
+covered, `d` increments, `pos_shift` halves (roughly), and a finer grid of
+smaller crosses is layered on top.
 
-All you need to do is rotate the u shapes (which is insane cause this scales infinitely).
+### Cross placement
 
-How does it scale?
+Each cross has four arms (up/down/left/right), each with length up to
+`pos_shift` for that depth. One of the four directions is chosen at random
+and left fully open (no gap), which is what guarantees connectivity — every
+cross has at least one unobstructed path out. The other three arms are each
+split at a random *odd* offset (`random_uneven`), leaving a one-cell gap
+partway along the arm. That gap is the "passage" through the wall; the two
+filled segments on either side of it are the wall itself.
 
-for the smalles working one its 4x4 cells that need to be connected
-it uses 5 u shapes
+Because `pos_shift` roughly halves every depth level, later passes add
+progressively finer detail nested inside the coarser structure from earlier
+passes — the maze is self-similar across depths rather than built cell-by-cell.
 
-for the next size its 8x8 cells
-and uses 21 u shapes
+## Why this approach
 
-There is a special way to make it less predictable the more you scale it
-using an alternate version of this algorithm.
+Most common maze algorithms (randomized DFS/backtracker, Prim's, Kruskal's)
+require carrying state that scales with the maze itself: a visited-cell set,
+a stack or frontier of candidate edges, or a union-find structure. To resume
+generation after a pause, or to figure out "what's the next cell to visit,"
+you need that accumulated history — there's no way to jump into the middle
+of the process without reconstructing it.
 
-i dub the alternative version: FSRRM-algorithm
+This algorithm doesn't need any of that. The entire generation state fits in
+five numbers: `x`, `y`, `depth`, `step`, `pos_shift`. Given those, `nextStep()`
+can compute exactly what to draw next with no memory of *how it got there* —
+it never needs to backtrack to a previous divergence point, because there's
+no concept of "get stuck, back up, try another branch." Every cross is placed
+independently based on its coordinates and the current depth.
 
-Fractal Square RAndom Rotation Maze Algorithm
+That property is useful in a few concrete situations:
 
+- **Streaming / incremental rendering** — the maze can be drawn progressively
+  at any speed, or jumped straight to completion, without changing the
+  algorithm (this is exactly what the play/step/reset controls in this repo
+  do).
+- **Constant memory regardless of maze size** — memory usage doesn't grow
+  with `n`, unlike a backtracker's visited/stack structures, which makes this
+  a reasonable fit for very large grids or constrained environments.
+- **Trivial resumability** — the five state values can be serialized and
+  restored at any point mid-generation; there's no call stack or history to
+  reconstruct.
+- **Depth-parallelism** — since crosses within the same depth level don't
+  depend on each other (only on the previous depth's structure), that level
+  could in principle be generated concurrently.
 
+The trade-off is that the structure is inherently self-similar and grid-aligned
+by powers of two — it doesn't have the organic, irregular passage lengths you
+get from a true randomized backtracker, and grid sizes are constrained to
+`2^(n+1) - 2`.
 
-EDIT:
-Upon later realization is that this concept applies as long as the geometric truth (U-shapes always lead to connected paths) is upheld,
-thus the alternative version should in theory be the "true" version.
-This "true" version should work regardless of the shape aslong as its divided in the U-shape.
+## Files
 
-As such a name change to:
-Hilbert-Constrained Recursive Spatial Division -> (HC)RSD algorithm
-would be more fitting
+- `maze.js` — `MazeGenerator` class: grid sizing, step logic, and cross drawing.
+- `script.js` — canvas setup, UI controls (play/pause/step/reset/speed), and
+  the animation loop that drives `nextStep()`.
 
-If this algorithm truly is a TRUE maze is sth. i'm uncertain to proove
+## Controls
+
+- **n slider** — sets maze depth (and therefore grid size and detail level).
+- **Speed slider** — controls delay between steps when playing; at max speed,
+  generation completes instantly rather than animating step by step.
+- **Play/Pause** — runs `nextStep()` on a timer until the maze is complete.
+- **Step** — advances generation by exactly one cross.
+- **Reset** — starts a new maze at the current `n`.
