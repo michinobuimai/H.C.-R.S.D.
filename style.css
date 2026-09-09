@@ -8,7 +8,7 @@ body {
     align-items: center;
 }
 
-h1 {
+p {
     position: absolute;
     top: 0vh;
     left: 50%;
@@ -21,7 +21,13 @@ h1 {
     padding: 1vh 2vh;
     border-radius: 2vh;
 }
-h1:hover::after {
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+p:hover::after {
     content: "Hilbert Constrained Recursive Spatial Division";
     position: absolute;
 
